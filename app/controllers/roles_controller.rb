@@ -2,6 +2,7 @@ class RolesController < ApplicationController
   
   before_filter :load_stage
   before_filter :load_host_choices, :only => [:new, :edit, :update, :create]
+  before_filter :ensure_admin, :only => [:new, :edit, :destroy, :create, :update]
   
   # GET /projects/1/stages/1/roles/1
   # GET /projects/1/stages/1/roles/1.xml

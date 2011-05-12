@@ -52,6 +52,10 @@ module VersionFu
           self.class.after(self)
         end
         
+        # Pass any unknown methods to the parent object
+        def method_missing(method, *args)
+          eval(original_class.to_s.demodulize.underscore).__send__ method, *args
+        end
       end
 
       # Housekeeping on versioned class

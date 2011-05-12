@@ -2,6 +2,7 @@ class Deployment < ActiveRecord::Base
   belongs_to :stage
   belongs_to :user
   has_and_belongs_to_many :roles
+  acts_as_filestore :log
   
   validates_presence_of :task, :stage, :user
   validates_length_of :task, :maximum => 250
@@ -216,6 +217,6 @@ class Deployment < ActiveRecord::Base
   def notify_per_mail
     self.stage.emails.each do |email|
       Notification.deliver_deployment(self, email)
-    end
+    end if (DEPLOY_TASKS.collect { |x| self.task =~ Regexp.new(x) }.compact.size > 0 || self.status != STATUS_SUCCESS)
   end
 end

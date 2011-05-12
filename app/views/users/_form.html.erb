@@ -31,4 +31,12 @@
     <b>Admin?</b><br />
     <%= check_box 'user', 'admin', :class => 'noframe' %>
   </p>
+
+  <p>
+    <b>Roles:</b><br />
+    <%= check_box_tag 'user[roles][user]', 1, @user.roles && @user.roles.include?('user'), :class => 'noframe' %>user
+    <%= check_box_tag 'user[roles][dev]', 1, @user.roles && @user.roles.include?('dev'), :class => 'noframe' %>dev
+    <%= check_box_tag 'user[roles][production]', 1, @user.roles && @user.roles.include?('production'), :class => 'noframe' %>production
+    <%= check_box_tag 'user[roles][admin]', 1, @user.roles && @user.roles.include?('admin'), :class => 'noframe' %>admin
+  </p>
 <% end -%>

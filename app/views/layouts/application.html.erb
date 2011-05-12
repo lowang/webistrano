@@ -15,7 +15,7 @@
   <div id="app_top">
     <div id="header">
       <div id="header_claim">Capistrano deployment the easy way</div>
-      <a href="<%= home_path %>"><%= image_tag('peritor_theme/webistrano_logo.gif', :border => '0')%></a>
+      <a href="<%= home_path %>"><%= image_tag(WebistranoConfig[:logo_url], :border => '0')%></a>
     </div>
     <div id="main_content">
       <% if logged_in? %>

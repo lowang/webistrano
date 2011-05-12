@@ -29,6 +29,9 @@
 			<p>
 			  <b>#Deployments:</b> <%=h @user.deployments.count %>
 			</p>
+			<p>
+			  <b>Roles:</b> <%=h @user.roles.join(', ') if @user.roles %>
+			</p>
 			<br/>
 			<% if current_user.admin? || current_user == @user %>
 			  <%= link_to 'Edit & change password', edit_user_path(@user), :class => 'arrow_link' %> | 

@@ -20,11 +20,12 @@ ActiveRecord::Schema.define(:version => 20090319185505) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "prompt_on_deploy", :default => 0
+    t.string   "default_value"
   end
 
   create_table "deployments", :force => true do |t|
     t.string   "task"
-    t.text     "log"
+    t.text     "log",               :limit => 16777215
     t.integer  "stage_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -34,7 +35,8 @@ ActiveRecord::Schema.define(:version => 20090319185505) do
     t.string   "excluded_host_ids"
     t.string   "revision"
     t.integer  "pid"
-    t.string   "status",            :default => "running"
+    t.string   "status",                                :default => "running"
+    t.text     "prompt_config"
   end
 
   create_table "deployments_roles", :id => false, :force => true do |t|
@@ -93,6 +95,7 @@ ActiveRecord::Schema.define(:version => 20090319185505) do
     t.integer  "no_release", :default => 0
     t.integer  "ssh_port"
     t.integer  "no_symlink", :default => 0
+    t.integer  "no_action",  :default => 0
   end
 
   create_table "stage_configurations", :force => true do |t|
@@ -108,6 +111,12 @@ ActiveRecord::Schema.define(:version => 20090319185505) do
     t.integer  "locked",                  :default => 0
   end
 
+  create_table "tasks", :force => true do |t|
+    t.string  "name"
+    t.integer "stage_id"
+    t.string  "role",     :limit => 32
+  end
+
   create_table "users", :force => true do |t|
     t.string   "login"
     t.string   "email"
@@ -119,6 +128,7 @@ ActiveRecord::Schema.define(:version => 20090319185505) do
     t.datetime "remember_token_expires_at"
     t.integer  "admin",                                   :default => 0
     t.string   "time_zone",                               :default => "UTC"
+    t.string   "roles"
     t.datetime "disabled"
   end
 

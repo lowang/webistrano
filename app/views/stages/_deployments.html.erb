@@ -9,7 +9,9 @@
 <% end %>
 <br />
 <% if @stage.deployment_possible? %>
+  <% if current_user.admin? %>
   <%= link_to 'New deployment', new_project_stage_deployment_path(current_project, @stage), :class => 'arrow_link' %> <%= (@stage.deployments.count > 1) ? '|' : '' %>
+  <% end %>
 <% else %>
   A deployment is currently not possible:<br />
   <%= display_deployment_problems(@stage) %>

@@ -11,6 +11,7 @@
       <th width="1%">Login</th>
       <th width="96%">Email</th>
       <th width="1%">Admin</th>
+      <th width="1%">Roles</th>      
       <th width="1%">Disabled</th>
       <th width="1%">Created At</th>
     </tr>
@@ -19,6 +20,7 @@
         <td nowrap><%= link_to h(user.login), user_path(user) %></td>
         <td><%=h user.email %></td>
         <td><%=h user.admin? ? 'Admin' : '' %></td>
+        <td><%=h user.roles.join(', ') %></td>
         <td>
           <% if user.disabled? %>
             <span style="color:red">disabled</span>

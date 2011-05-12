@@ -5,6 +5,7 @@ class Stage < ActiveRecord::Base
   has_many :hosts, :through => :roles, :uniq => true
   has_many :configuration_parameters, :dependent => :destroy, :class_name => "StageConfiguration", :order => "name ASC"
   has_many :deployments, :dependent => :destroy, :order => "created_at DESC"
+  has_many :tasks, :dependent => :destroy, :order => "name ASC"
   belongs_to :locking_deployment, :class_name => 'Deployment', :foreign_key => :locked_by_deployment_id 
   
   validates_uniqueness_of :name, :scope => :project_id
@@ -119,12 +120,19 @@ class Stage < ActiveRecord::Base
   end
   
   # returns a lists of all availabe tasks for this stage
-  def list_tasks
+  def list_tasks(options={})
     d = Deployment.new
     d.stage = self
     deployer = Webistrano::Deployer.new(d)
     begin
-      deployer.list_tasks.collect { |t| {:name => t.fully_qualified_name, :description => t.description} }.delete_if{|t| t[:name] == 'shell' || t[:name] == 'invoke'}
+      tasks = deployer.list_tasks.collect { |t| {:name => t.fully_qualified_name, :description => t.description} }.delete_if{|t| t[:name] == 'shell' || t[:name] == 'invoke'}
+      # filter task not aproperiate for current user role
+      unless options[:user].nil?
+        task_permissions = {}
+        self.tasks.find(:all).each { |task| task_permissions[task[:name]] = task[:role].to_sym }
+        tasks.delete_if { |task| !options[:user].roles.include?(task_permissions[task[:name]]) && !options[:user].roles.include?(task_permissions[task[:name]].to_s) }
+      end
+      tasks      
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.error("Problem listing tasks of stage #{id}: #{e} - #{e.backtrace.join("\n")} ")
       [{:name => "Error", :description => "Could not load tasks - syntax error in recipe definition?"}]

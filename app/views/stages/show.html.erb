@@ -14,6 +14,9 @@
      <%= link_to 'Info', tasks_project_stage_path(current_project, @stage), :class => 'arrow_link',
          :onclick => "location.href='#{tasks_project_stage_path(current_project, @stage)}#' + $F('task'); return false" %>
    </p>
+   <% else %>
+   <p>Deployment not possible - no tasks available</p>
+   <% end %>
     </div>
   <div class="special_box_bottom"></div>
 </div>

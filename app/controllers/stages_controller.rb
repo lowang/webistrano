@@ -1,6 +1,7 @@
 class StagesController < ApplicationController
 
   before_filter :load_project
+  before_filter :ensure_admin, :only => [:new, :edit, :destroy, :create, :update, :capfile, :recipes]
   
   # GET /projects/1/stages.xml
   def index
@@ -14,7 +15,8 @@ class StagesController < ApplicationController
   # GET /projects/1/stages/1.xml
   def show
     @stage = current_project.stages.find(params[:id])
-    @task_list = [['All tasks: ', '']] + @stage.list_tasks.collect{|task| [task[:name], task[:name]]}.sort()
+    @task_list = @stage.list_tasks(:user => current_user).collect{|task| [task[:name], task[:name]]}.sort()   
+#    @task_list = [['All tasks: ', '']] + @stage.list_tasks.collect{|task| [task[:name], task[:name]]}.sort()
 
     respond_to do |format|
       format.html # show.rhtml
@@ -36,8 +38,8 @@ class StagesController < ApplicationController
   # GET /projects/1/stages/1/tasks.xml
   def tasks
     @stage = current_project.stages.find(params[:id])
-    @tasks = @stage.list_tasks
-    
+    @tasks = @stage.list_tasks(:user => current_user)
+
     respond_to do |format|
       format.html # tasks.rhtml
       format.xml  { render :xml => @tasks.to_xml }

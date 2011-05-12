@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
   # Virtual attribute for the unencrypted password
   attr_accessor :password
   
-  attr_accessible :login, :email, :password, :password_confirmation, :time_zone, :tz
+  attr_accessible :login, :email, :password, :password_confirmation, :time_zone, :tz, :roles
 
   validates_presence_of     :login, :email
   validates_presence_of     :password,                   :if => :password_required?
@@ -16,7 +16,8 @@ class User < ActiveRecord::Base
   validates_length_of       :email,    :within => 3..100
   validates_uniqueness_of   :login, :email, :case_sensitive => false
   before_save :encrypt_password
-  
+  serialize :roles
+
   named_scope :enabled, :conditions => {:disabled => nil}
   named_scope :disabled, :conditions => "disabled IS NOT NULL"
     
@@ -92,7 +93,12 @@ class User < ActiveRecord::Base
   def recent_deployments(limit=3)
     self.deployments.find(:all, :limit => limit, :order => 'created_at DESC')
   end
-  
+  def roles=(val)
+    self[:roles] = [] unless self[:roles]
+    self[:roles] = val.collect { |k,v| k if v.to_i == 1 } if val.kind_of?(Hash)
+    self[:roles] << val if val.kind_of?(Array)
+  end
+
   def disabled?
     !self.disabled.blank?
   end
