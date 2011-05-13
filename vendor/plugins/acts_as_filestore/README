@@ -1,0 +1,15 @@
+ActsAsFilestore
+===============
+
+ Specify this +acts_as+ extension if you want model attributes to be stored in local file instead of database.
+ This extension is specifically useful for large BLOBs
+
+Example
+=======
+
+ class Category < ActiveRecord::Base
+   acts_as_filestore :large_binary_column, :dir => "Data"
+ end
+
+
+Copyright (c) 2009 [Przemyslaw Wroblewski], released under the MIT license
