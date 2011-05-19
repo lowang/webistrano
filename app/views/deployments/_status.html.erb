@@ -61,8 +61,33 @@
 <fieldset class="fieldset">
   <legend>Log</legend>
   <div style="float:right; padding: 0px 5px 10px 0px; *padding: 0px"><input type="checkbox" class="noframe" id="auto_scroll_log" <%=h @auto_scroll ? 'checked="checked"' : ''%> > <label for="auto_scroll_log" class="redtext"><b>auto scroll</b></label></div>
-	<div class="log_output">
-		<pre><%=h @deployment.log.gsub('\n', "\n") rescue '' %></pre>
+	<style type="text/css">
+      pre.screen span { line-height:14px !important; padding: 1px 0 1px 0 !important; }
+    </style>
+    <div class="log_output">
+	  <%#*<pre><%=h @deployment.log.gsub('\n', "\n") rescue '' %%></pre>%>
+      <%# AnsiSys lib is not efficient on longer data. %>
+      <% if @deployment.log %>
+        <% if @deployment.log.length < 1000
+        require 'ansisys'
+        terminal = AnsiSys::Terminal.new
+        terminal.echo(@deployment.log.gsub('\n', "\n")) rescue ''
+        defcolors = AnsiSys::Screen.default_css_colors
+        [:bold, :faint, :normal].each { |k| defcolors[k][:green] = "#BBFFBB"; defcolors[k][:red] = "#FF8888" }
+        %>
+        <%= terminal.render(:html, 1024, nil, defcolors) rescue ''%>
+        <% else %>
+          <%
+            out = h(@deployment.log.gsub('\n', "\n"))
+            out = truncate(out, 128*1042) #limit output
+            out.gsub!(/\e\[1;41;1m(.*?)\e\[0m/m,'<span style="background-color: #FF8888">\1</span>')
+            out.gsub!(/\e\[1;42;1m(.*?)\e\[0m/m,'<span style="background-color: #BBFFBB">\1</span>')
+            out.gsub!(/\e\[1;\d+;1m/m, '')
+            out.gsub!(/\e\[0m/m, '')
+          %>
+          <pre class="screen"><%= out %></pre>
+        <% end %>
+      <% end %>
   </div>
 </fieldset>
 
