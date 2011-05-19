@@ -65,11 +65,14 @@ module Capistrano
           end
 
           def get_repository
-            command = "if [[ -d #{repository_dir} && -d #{repository_dir}/.svn ]]; then " +
-              "#{source.send(:scm, :info, repository_dir, source.send(:authentication))}|grep URL; fi"
+            command = "#{source.send(:scm, :info, repository_dir, source.send(:authentication))}|grep URL; true"
             out = nil
             run command do |channel, stream, data|
               out = data.chomp.gsub(/URL:\s*/, '')
+            end
+            unless out =~ /:\/\//
+              logger.trace "wrong remote repository found: #{out}"
+              out = nil
             end
             return out
           end
